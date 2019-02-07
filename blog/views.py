@@ -4,7 +4,10 @@ from django.views.decorators.csrf import csrf_exempt
 
 from .models import Post
 from .trade.HuobiServices import *
+from .Util import *
+import requests
 import json
+import time
 
 
 # Create your views here.
@@ -26,3 +29,12 @@ def btc_trade(request):
         btc_curr = ticker['tick']['close']
         # btc_curr = 3433.33
         return HttpResponse(json.dumps({"btc": btc_curr}))
+
+@csrf_exempt
+def csdn_feed(request):
+    if request.method == 'GET':
+        t = str(time.time()*1000000)
+        res = requests.get("https://www.csdn.net/api/articles?type=more&category=home&shown_offset="+t)
+        pretty_json = deal_json_invaild(res.text.encode('utf-8').decode('unicode-escape'))
+
+        # TODO: solve the problem of invalid JSON
